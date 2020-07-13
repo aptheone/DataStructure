@@ -1,5 +1,8 @@
 package com.aptheone.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tree {
     private class Node {
         private int value;
@@ -59,4 +62,160 @@ public class Tree {
         return false;
     }
 
+    public void traversePreOrder() {
+        traversePreOrder(root);
+    }
+
+    //root->Left->Right
+    private void traversePreOrder(Node root) {
+
+        if (root == null) {
+            return;
+        }
+        System.out.println(root.value);
+        traversePreOrder(root.leftChild);
+        traversePreOrder(root.rightChild);
+    }
+
+    public void traverseInOrder() {
+        traverseInOrder(root);
+    }
+
+    //Left->root->Right
+    private void traverseInOrder(Node root) {
+        if (root == null) {
+            return;
+        }
+        traverseInOrder(root.leftChild);
+        System.out.println(root.value);
+        traverseInOrder(root.rightChild);
+    }
+
+    public void traversePostOrder() {
+        traversePostOrder(root);
+    }
+
+    //Left->Right->root
+    private void traversePostOrder(Node root) {
+
+        if (root == null) {
+            return;
+        }
+        traversePostOrder(root.leftChild);
+        traversePostOrder(root.rightChild);
+        System.out.println(root.value);
+    }
+
+    public int height() {
+        return height(root);
+    }
+
+    private int height(Node root) {
+        if (root == null) {
+            return -1;
+        }
+        if (isLeaf(root)) {
+            return 0;
+        }
+        return 1 + Math.max(height(root.leftChild), height(root.rightChild));
+    }
+
+    private boolean isLeaf(Node root) {
+        return root.leftChild == null && root.rightChild == null;
+    }
+
+    public int min() {
+        return min(root);
+    }
+
+    //O(n)
+    private int min(Node root) {
+        if (isLeaf(root)) {
+            return root.value;
+        }
+        int left = min(root.leftChild);
+        int right = min(root.rightChild);
+        return Math.min(Math.min(left, right), root.value);
+    }
+
+    //O(logn)
+    public int minInBinarySerachTree() {
+        if (root == null) {
+            throw new IllegalStateException();
+        }
+        Node current = root;
+        Node last = current;
+        while (current != null) {
+            last = current;
+            current = current.leftChild;
+        }
+        return last.value;
+    }
+
+    public boolean equals(Tree other) {
+        if (other == null)
+            return false;
+        return equals(root, other.root);
+    }
+
+    private boolean equals(Node first, Node second) {
+
+        if (first == null && second == null) {
+            return true;
+        }
+        if (first != null && second != null) {
+            return first.value == second.value &&
+                    equals(first.leftChild, second.leftChild) &&
+                    equals(first.rightChild, second.rightChild);
+        }
+        return false;
+    }
+
+
+    public boolean isBinarySearchTree() {
+        return isBinarySearchTree(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    private boolean isBinarySearchTree(Node root, int min, int max) {
+        if (root == null) {
+            return true;
+        }
+        if (root.value < min || root.value > max) {
+            return false;
+        }
+        return isBinarySearchTree(root.leftChild, min, root.value - 1)
+                && isBinarySearchTree(root.rightChild, root.value + 1, max);
+    }
+
+    public void swapRoot() {
+        Node temp = root.leftChild;
+        root.leftChild = root.rightChild;
+        root.rightChild = temp;
+    }
+
+    public List<Integer> getNodeAtDistance(int distance) {
+        List<Integer> integerList = new ArrayList<>();
+        getNodeAtDistance(root, distance, integerList);
+        return integerList;
+    }
+
+    private void getNodeAtDistance(Node root, int distance, List<Integer> integerList) {
+        if (root == null) {
+            return;
+        }
+        if (distance == 0) {
+            integerList.add(root.value);
+            return;
+        }
+        getNodeAtDistance(root.leftChild, distance - 1, integerList);
+        getNodeAtDistance(root.rightChild, distance - 1, integerList);
+    }
+
+    public void traverseLevelOrder() {
+        for (int i = 0; i <= height(); i++) {
+            for (Integer value : getNodeAtDistance(i)) {
+                System.out.println(value);
+            }
+        }
+    }
 }
